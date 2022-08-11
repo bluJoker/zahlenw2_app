@@ -1,8 +1,35 @@
 class AcGameMenu {
     constructor(root) { //root: 即web.html中的js:acgame对象
         this.root = root;
+	console.log(this);
+	console.log(root);    
 	this.$menu = $(`
-<div class="ac-game-menu">
+<!-- TODO:
+<div class="ac-game-menu" style="background-image:url(https://img.dota2.com.cn/dota2static/file/e1b72511-af28-4233-839f-4b93e64566f3.jpg)">
+    <div class="banner-bg">
+        <video class="banner-vidio-bg" preload="preload" muted="true" autoplay="" autobuffer="true" loop="loop" poster="https://img.dota2.com.cn/dota2static/file/e1b72511-af28-4233-839f-4b93e64566f3.jpg">
+            <source type="video/webm" src="https://static.pwesports.cn/esportsadmin/DOTA2/primalbeast/video/pb_header_loop.webm">
+            <source type="video/mp4" src="https://static.pwesports.cn/esportsadmin/DOTA2/primalbeast/video/pb_header_loop.mp4">
+        </video>
+          <div class="ac-game-menu-field">
+        <div class="ac-game-menu-field-item ac-game-menu-field-item-single">
+            Single
+        </div>
+        <br>
+        <div class="ac-game-menu-field-item ac-game-menu-field-item-multi">
+            Multiple
+        </div>
+        <br>
+        <div class="ac-game-menu-field-item ac-game-menu-field-item-settings">
+            Quit
+        </div>
+    </div>
+
+    </div>
+</div>
+-->
+ 
+ <div class="ac-game-menu">
     <div class="ac-game-menu-field">
         <div class="ac-game-menu-field-item ac-game-menu-field-item-single">
 	    Single
@@ -81,6 +108,7 @@ class AcGamePlayground {
 class AcGame {
     constructor(id) {
         console.log("create zahlenw2 game~");
+	console.log(this);
 	this.id = id; //传进来的id为div-id
 	this.$ac_game = $('#' + id);
         this.menu = new AcGameMenu(this);
