@@ -18,7 +18,7 @@ class GameMap extends AcGameObject {
 
     render() { //渲染
 	// choose color first, then draw rectangle
-	this.ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+	this.ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 }
