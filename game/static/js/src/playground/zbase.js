@@ -10,17 +10,17 @@ class AcGamePlayground {
 	this.height = this.$playground.height();
 	this.game_map = new GameMap(this);
 	this.players = [];
-        this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.04, "white", this.height * 0.2, true));
+        this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.035, "white", this.height * 0.2, true));
 	for (let i = 0; i < 5; i ++ ) {
-            this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.04, this.get_random_color(), this.height * 0.2, false));
+            this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.035, this.get_random_color(), this.height * 0.2, false));
         }
         
 	this.start();
     }
 
     get_random_color() {
-        let colors = ["blue", "red", "pink", "grey", "green"];
-        return colors[Math.floor(Math.random() * 5)];
+        let colors = ["blue", "red", "pink", "grey", "green", "yellow"];
+        return colors[Math.floor(Math.random() * 6)];
     }
 
     start() {
