@@ -9,17 +9,16 @@
 .ac-game-menu-field {
     width: 12vw;
     position: relative;
-    top: 69vh;
-    left: 85vw;
+    top: 15%;
+    left: 10%;
 }
 
 .ac-game-menu-field-item {
-    height: 3vh;
-    width: 8vw;
+    height: 5vh;
+    width: 10vw;
     color: white;
     font-size: 3vh;
     //font-style: italic;
-    padding: 2vh;
     text-align: center;
     background-color: rgba(39,21,28, 0.5);
     border-radius: 10px;
