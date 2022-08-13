@@ -327,12 +327,21 @@ class Player extends AcGameObject {
         }  
 	this.render();
     }
+    
     render() {
 	this.ctx.beginPath();
 	this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
 	//console.log(this.x, this.y, this.radius);
 	this.ctx.fillStyle = this.color;
 	this.ctx.fill();
+    }
+    
+    on_destroy() {
+        for (let i = 0; i < this.playground.players.length; i++) {
+            if (this.playground.players[i] === this) {
+                this.playground.players.splice(i, 1);
+            }
+        }
     }
 }
 class FireBall extends AcGameObject {
