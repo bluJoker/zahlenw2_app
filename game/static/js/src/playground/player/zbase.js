@@ -24,6 +24,7 @@ class Player extends AcGameObject {
 	this.eps = 0.1;
         //被击中后的摩擦力
         this.friction = 0.9;
+        this.spent_time = 0;
 
 	//当前选择的技能
 	this.cur_skill = null;
@@ -118,6 +119,14 @@ class Player extends AcGameObject {
     }
 
     update() {
+	//单机模式中其他玩家随机攻击
+	this.spent_time += this.timedelta / 1000;
+	if (!this.is_me && this.spent_time > 4 && Math.random() < 1 / 300.0) {
+	    let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
+            let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
+            let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;
+            this.shoot_fireball(tx, ty);
+	}
 	//伤害消失。10表示被撞后速度<=10就不管它了，让其再次随机运动。
         if (this.damage_speed > 10) {
             this.vx = this.vy = 0;
