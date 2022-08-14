@@ -5,21 +5,25 @@ class AcGameMenu {
 	console.log(root);    
 	this.$menu = $(`
  <div class="ac-game-menu">
+    <div class="banner-middle">
+        <h4>一款现代多人游戏杰作-《DESTRUCTOID》</h4>
+    </div>
     <div class="ac-game-menu-field">
         <div class="ac-game-menu-field-item ac-game-menu-field-item-single">
-	    Single
+	    单人模式
 	</div>
 	<br>
 	<div class="ac-game-menu-field-item ac-game-menu-field-item-multi">
-	    Multiple
+	    多人模式
 	</div>
 	<br>
 	<div class="ac-game-menu-field-item ac-game-menu-field-item-settings">
-	    Quit
+	    退出
 	</div>
     </div>
 </div>
 	`);//html对象前加$，普通对象不加$
+        this.$menu.hide();
         this.root.$ac_game.append(this.$menu);
 	this.$single = this.$menu.find('.ac-game-menu-field-item-single'); //class前加. id前加#
 	this.$multi = this.$menu.find('.ac-game-menu-field-item-multi'); //class前加. id前加#

@@ -5,21 +5,25 @@ class AcGameMenu {
 	console.log(root);    
 	this.$menu = $(`
  <div class="ac-game-menu">
+    <div class="banner-middle">
+        <h4>一款现代多人游戏杰作-《DESTRUCTOID》</h4>
+    </div>
     <div class="ac-game-menu-field">
         <div class="ac-game-menu-field-item ac-game-menu-field-item-single">
-	    Single
+	    单人模式
 	</div>
 	<br>
 	<div class="ac-game-menu-field-item ac-game-menu-field-item-multi">
-	    Multiple
+	    多人模式
 	</div>
 	<br>
 	<div class="ac-game-menu-field-item ac-game-menu-field-item-settings">
-	    Quit
+	    退出
 	</div>
     </div>
 </div>
 	`);//html对象前加$，普通对象不加$
+        this.$menu.hide();
         this.root.$ac_game.append(this.$menu);
 	this.$single = this.$menu.find('.ac-game-menu-field-item-single'); //class前加. id前加#
 	this.$multi = this.$menu.find('.ac-game-menu-field-item-multi'); //class前加. id前加#
@@ -203,6 +207,11 @@ class Player extends AcGameObject {
 
 	//当前选择的技能
 	this.cur_skill = null;
+	
+	if (this.is_me) {
+	    this.img = new Image();
+	    this.img.src = this.playground.root.settings.photo;
+	}    
     }
     
     add_listening_events() {
@@ -331,11 +340,21 @@ class Player extends AcGameObject {
     }
     
     render() {
-	this.ctx.beginPath();
-	this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-	//console.log(this.x, this.y, this.radius);
-	this.ctx.fillStyle = this.color;
-	this.ctx.fill();
+	if (this.is_me) {
+            this.ctx.save();
+	    this.ctx.beginPath();
+	    this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+	    this.ctx.stroke();
+	    this.ctx.clip();
+	    this.ctx.drawImage(this.img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2); 
+	    this.ctx.restore();
+	} else {
+            this.ctx.beginPath();
+	    this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+	    //console.log(this.x, this.y, this.radius);
+	    this.ctx.fillStyle = this.color;
+      	    this.ctx.fill();
+	}
     }
     
     on_destroy() {
@@ -439,9 +458,9 @@ class AcGamePlayground {
         this.height = this.$playground.height();
         this.game_map = new GameMap(this);
         this.players = [];
-        this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.035, "white", this.height * 0.2, true));
+        this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.04, "white", this.height * 0.2, true));
         for (let i = 0; i < 5; i ++ ) {
-            this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.035, this.get_random_color(), this.height * 0.2, false));
+            this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.04, this.get_random_color(), this.height * 0.2, false));
         }
 
     }
@@ -451,12 +470,66 @@ class AcGamePlayground {
     }
 }
 
+class Settings {
+    constructor(root) {
+        this.root = root;
+        this.platform = "WEB";
+        if (this.root.AcWingOS) this.platform = "ACAPP";
+        this.username = "";
+        this.photo = "";
+
+        this.start();
+    }
+
+    start() {
+        this.getinfo();
+    }
+
+    register() {  // 打开注册界面
+    }
+
+    login() {  // 打开登录界面
+    }
+
+    getinfo() {
+        let outer = this;
+
+        $.ajax({
+            url: "https://app2672.acapp.acwing.com.cn/settings/getinfo/",
+            type: "GET",
+            data: {
+                platform: outer.platform, 
+            },
+            success: function(resp) {
+		console.log(resp);
+                if (resp.result === "success") {
+                    outer.username = resp.username; 
+		    outer.photo = resp.photo;
+		    outer.hide();
+                    outer.root.menu.show();
+                } else {
+                    outer.login();
+                }
+            }
+        });
+    }
+
+    hide() {
+    }
+
+    show() {
+    }
+}
+
 export class AcGame {
-    constructor(id) {
+    constructor(id, AcWingOS) {
         console.log("create zahlenw2 game~");
 	console.log(this);
-	this.id = id; //传进来的id为div-id
+	this.id = id; //传进i来的id为div-id
 	this.$ac_game = $('#' + id);
+	this.AcWingOS = AcWingOS
+
+	this.settings = new Settings(this);    
         this.menu = new AcGameMenu(this);
 	this.playground = new AcGamePlayground(this);
     }
