@@ -500,7 +500,6 @@ class Settings {
             </div>
         </div>
  		<div class="ac-game-settings-error-message">
-			用户名密码错误
         </div>
 		<div class="ac-game-settings-option">
             注册
@@ -557,10 +556,22 @@ class Settings {
     `);
         this.$login = this.$settings.find(".ac-game-settings-login");
 
+        this.$login_username = this.$login.find(".ac-game-settings-username input");
+        this.$login_password = this.$login.find(".ac-game-settings-password input");
+        this.$login_submit = this.$login.find(".ac-game-settings-submit button");
+        this.$login_error_message = this.$login.find(".ac-game-settings-error-message");
+        this.$login_register = this.$login.find(".ac-game-settings-option");
+
         this.$login.hide();
-        
+
         this.$register = this.$settings.find(".ac-game-settings-register");
-        
+        this.$register_username = this.$register.find(".ac-game-settings-username input");
+        this.$register_password = this.$register.find(".ac-game-settings-password-first input");
+        this.$register_password_confirm = this.$register.find(".ac-game-settings-password-second input");
+        this.$register_submit = this.$register.find(".ac-game-settings-submit button");
+        this.$register_error_message = this.$register.find(".ac-game-settings-error-message");
+        this.$register_login = this.$register.find(".ac-game-settings-option");
+
         this.$register.hide();
 
         this.root.$ac_game.append(this.$settings);
@@ -570,18 +581,40 @@ class Settings {
 
     start() {
         this.getinfo();
+        this.add_listening_events();
     }
 
     register() {  // 打开注册界面
-	    this.$login.hide();
+        this.$login.hide();
         this.$register.show();
-	}
+    }
 
     login() {  // 打开登录界面
         this.$register.hide();
         this.$login.show();
 
     }
+
+	add_listening_events() {
+        let outer = this;
+        this.add_listening_events_login();
+        this.add_listening_events_register();
+    }
+
+    add_listening_events_login() {
+        let outer = this;
+        this.$login_register.click(function() {
+            outer.register();
+        });
+    }
+
+    add_listening_events_register() {
+        let outer = this;
+        this.$register_login.click(function() {
+            outer.login();
+        });
+    }
+
 
     getinfo() {
         let outer = this;
@@ -600,7 +633,7 @@ class Settings {
                     outer.hide();
                     outer.root.menu.show();
                 } else {
-                    outer.register();
+                    outer.login();
                 }
             }
         });
