@@ -134,6 +134,9 @@ class Settings {
         this.$login_register.click(function() {
             outer.register();
         });
+		this.$login_submit.click(function() {
+            outer.login_on_remote();
+        });
     }
 
     add_listening_events_register() {
@@ -156,12 +159,36 @@ class Settings {
             success: function(resp) {
                 console.log(resp);
                 if (resp.result === "success") {
-                    outer.username = resp.username; 
+                    outer.username = resp.username;
                     outer.photo = resp.photo;
                     outer.hide();
                     outer.root.menu.show();
                 } else {
                     outer.login();
+                }
+            }
+        });
+    }
+
+	login_on_remote() {  // 在远程服务器上登录
+        let outer = this;
+        let username = this.$login_username.val(); //val: 取出input的值
+        let password = this.$login_password.val();
+        this.$login_error_message.empty(); //每次登陆清空上次的errmsg
+
+        $.ajax({
+            url: "https://app2672.acapp.acwing.com.cn/settings/login/",
+            type: "GET",
+            data: {
+                username: username,
+                password: password,
+            },
+            success: function(resp) {
+				console.log(resp)
+                if (resp.result === "success") {
+                    location.reload(); //逻辑: 登录成功就刷新页面, 调用getinfo可以获取cookie的用户信息, 登录成功会显示菜单页面[getinfo: outer.root.menu.show();]
+                } else {
+                    outer.$login_error_message.html(resp.result);
                 }
             }
         });
