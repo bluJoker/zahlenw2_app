@@ -22,13 +22,13 @@ class AcGameMenu {
 	</div>
     </div>
 </div>
-	`);//html对象前加$，普通对象不加$
+    `);//html对象前加$，普通对象不加$
         this.$menu.hide();
         this.root.$ac_game.append(this.$menu);
-	this.$single = this.$menu.find('.ac-game-menu-field-item-single'); //class前加. id前加#
-	this.$multi = this.$menu.find('.ac-game-menu-field-item-multi'); //class前加. id前加#
-	this.$settings = this.$menu.find('.ac-game-menu-field-item-settings'); //class前加. id前加#
-        
+        this.$single = this.$menu.find('.ac-game-menu-field-item-single'); //class前加. id前加#
+        this.$multi = this.$menu.find('.ac-game-menu-field-item-multi'); //class前加. id前加#
+        this.$settings = this.$menu.find('.ac-game-menu-field-item-settings'); //class前加. id前加#
+
         this.start();
     }
     start() {
@@ -45,11 +45,11 @@ class AcGameMenu {
         this.$multi.click(function(){
             //outer.hide();
             //outer.root.playground.show("multi mode");
-	    console.log("click mulit");
+            console.log("click mulit");
         });
         this.$settings.click(function(){
             //outer.root.settings.logout_on_remote();
-	    console.log("click quit");
+            console.log("click quit");
         });
 
     }

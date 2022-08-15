@@ -22,13 +22,13 @@ class AcGameMenu {
 	</div>
     </div>
 </div>
-	`);//html对象前加$，普通对象不加$
+    `);//html对象前加$，普通对象不加$
         this.$menu.hide();
         this.root.$ac_game.append(this.$menu);
-	this.$single = this.$menu.find('.ac-game-menu-field-item-single'); //class前加. id前加#
-	this.$multi = this.$menu.find('.ac-game-menu-field-item-multi'); //class前加. id前加#
-	this.$settings = this.$menu.find('.ac-game-menu-field-item-settings'); //class前加. id前加#
-        
+        this.$single = this.$menu.find('.ac-game-menu-field-item-single'); //class前加. id前加#
+        this.$multi = this.$menu.find('.ac-game-menu-field-item-multi'); //class前加. id前加#
+        this.$settings = this.$menu.find('.ac-game-menu-field-item-settings'); //class前加. id前加#
+
         this.start();
     }
     start() {
@@ -45,11 +45,11 @@ class AcGameMenu {
         this.$multi.click(function(){
             //outer.hide();
             //outer.root.playground.show("multi mode");
-	    console.log("click mulit");
+            console.log("click mulit");
         });
         this.$settings.click(function(){
             //outer.root.settings.logout_on_remote();
-	    console.log("click quit");
+            console.log("click quit");
         });
 
     }
@@ -478,6 +478,93 @@ class Settings {
         this.username = "";
         this.photo = "";
 
+        this.$settings = $(`
+<div class="ac-game-settings">
+    <div class="ac-game-settings-login">
+        <div class="ac-game-settings-title">
+            登录
+        </div>
+		<div class="ac-game-settings-username">
+            <div class="ac-game-settings-item">
+                <input type="text" placeholder="用户名">
+            </div>
+        </div>
+		<div class="ac-game-settings-password">
+            <div class="ac-game-settings-item">
+                <input type="password" placeholder="密码">
+            </div>
+        </div>
+		<div class="ac-game-settings-submit">
+            <div class="ac-game-settings-item">
+                <button>登录</button>
+            </div>
+        </div>
+ 		<div class="ac-game-settings-error-message">
+			用户名密码错误
+        </div>
+		<div class="ac-game-settings-option">
+            注册
+        </div>
+		<br>
+        <div class="ac-game-settings-acwing">
+            <img width="40" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
+            <br>
+            <div>
+                w2一键登录
+            </div>
+        </div>
+    </div>
+    <div class="ac-game-settings-register">
+        <div class="ac-game-settings-title">
+            注册
+        </div>
+        <div class="ac-game-settings-username">
+            <div class="ac-game-settings-item">
+                <input type="text" placeholder="用户名">
+            </div>
+        </div>
+        <div class="ac-game-settings-password ac-game-settings-password-first">
+            <div class="ac-game-settings-item">
+                <input type="password" placeholder="密码">
+            </div>
+        </div>
+        <div class="ac-game-settings-password ac-game-settings-password-second">
+            <div class="ac-game-settings-item">
+                <input type="password" placeholder="确认密码">
+            </div>
+        </div>
+        <div class="ac-game-settings-submit">
+            <div class="ac-game-settings-item">
+                <button>注册</button>
+            </div>
+        </div>
+        <div class="ac-game-settings-error-message">
+        </div>
+        <div class="ac-game-settings-option">
+            登录
+        </div>
+        <br>
+        <div class="ac-game-settings-acwing">
+            <img width="30" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
+            <br>
+            <div>
+                w2一键登录
+            </div>
+        </div>
+ 
+    </div>
+</div>
+    `);
+        this.$login = this.$settings.find(".ac-game-settings-login");
+
+        this.$login.hide();
+        
+        this.$register = this.$settings.find(".ac-game-settings-register");
+        
+        this.$register.hide();
+
+        this.root.$ac_game.append(this.$settings);
+
         this.start();
     }
 
@@ -486,9 +573,14 @@ class Settings {
     }
 
     register() {  // 打开注册界面
-    }
+	    this.$login.hide();
+        this.$register.show();
+	}
 
     login() {  // 打开登录界面
+        this.$register.hide();
+        this.$login.show();
+
     }
 
     getinfo() {
@@ -501,37 +593,39 @@ class Settings {
                 platform: outer.platform, 
             },
             success: function(resp) {
-		console.log(resp);
+                console.log(resp);
                 if (resp.result === "success") {
                     outer.username = resp.username; 
-		    outer.photo = resp.photo;
-		    outer.hide();
+                    outer.photo = resp.photo;
+                    outer.hide();
                     outer.root.menu.show();
                 } else {
-                    outer.login();
+                    outer.register();
                 }
             }
         });
     }
 
     hide() {
+        this.$settings.hide();
     }
 
     show() {
+        this.$settings.show();
     }
 }
 
 export class AcGame {
     constructor(id, AcWingOS) {
         console.log("create zahlenw2 game~");
-	console.log(this);
-	this.id = id; //传进i来的id为div-id
-	this.$ac_game = $('#' + id);
-	this.AcWingOS = AcWingOS
+        console.log(this);
+        this.id = id; //传进i来的id为div-id
+        this.$ac_game = $('#' + id);
+        this.AcWingOS = AcWingOS
 
-	this.settings = new Settings(this);    
+        this.settings = new Settings(this);    
         this.menu = new AcGameMenu(this);
-	this.playground = new AcGamePlayground(this);
+        this.playground = new AcGamePlayground(this);
     }
 }
 
