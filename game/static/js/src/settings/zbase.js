@@ -144,6 +144,9 @@ class Settings {
         this.$register_login.click(function() {
             outer.login();
         });
+        this.$register_submit.click(function() {
+            outer.register_on_remote();
+        });
     }
 
 
@@ -154,7 +157,7 @@ class Settings {
             url: "https://app2672.acapp.acwing.com.cn/settings/getinfo/",
             type: "GET",
             data: {
-                platform: outer.platform, 
+                platform: outer.platform,
             },
             success: function(resp) {
                 console.log(resp);
@@ -192,6 +195,50 @@ class Settings {
                 }
             }
         });
+    }
+
+    register_on_remote() {  // 在远程服务器上注册
+        let outer = this;
+        let username = this.$register_username.val();
+        let password = this.$register_password.val();
+        let password_confirm = this.$register_password_confirm.val();
+        this.$register_error_message.empty();
+        
+        $.ajax({
+            url: "https://app2672.acapp.acwing.com.cn/settings/register/",
+            type: "GET", // 方便调试用GET，此处修改数据库应该用post[安全]
+            data: {
+                username: username,
+                password: password,
+                password_confirm: password_confirm,
+
+            },
+            success: function(resp) {
+                console.log(resp);
+                if (resp.result === "success") {
+                    location.reload();
+                } else {
+                    outer.$register_error_message.html(resp.result);
+                }
+            }
+        });
+    }
+
+    logout_on_remote() {  // 在远程服务器上登出
+        if (this.platform === "ACAPP") {
+            //this.root.AcWingOS.api.window.close();
+            return false;
+        } else {
+            $.ajax({
+                url: "https://app2672.acapp.acwing.com.cn/settings/logout/",
+                type: "GET",
+                success: function(resp) {
+                    if (resp.result === "success") {
+                        location.reload();
+                    }
+                }
+            });
+        }
     }
 
     hide() {

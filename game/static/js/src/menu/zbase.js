@@ -48,10 +48,9 @@ class AcGameMenu {
             console.log("click mulit");
         });
         this.$settings.click(function(){
-            //outer.root.settings.logout_on_remote();
-            console.log("click quit");
+            outer.root.settings.logout_on_remote();
+            //console.log("click quit");
         });
-
     }
     show() {  // 显示menu界面
         this.$menu.show();
