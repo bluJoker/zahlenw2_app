@@ -34,7 +34,7 @@ class Settings {
         </div>
 		<br>
         <div class="ac-game-settings-acwing">
-            <img width="40" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
+            <img width="50" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
             <br>
             <div>
                 w2一键登录
@@ -72,7 +72,7 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-acwing">
-            <img width="30" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
+            <img width="50" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
             <br>
             <div>
                 w2一键登录

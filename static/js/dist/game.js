@@ -458,7 +458,7 @@ class AcGamePlayground {
         this.game_map = new GameMap(this);
         this.players = [];
         this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.04, "white", this.height * 0.2, true));
-        for (let i = 0; i < 5; i ++ ) {
+        for (let i = 0; i < 8; i ++ ) {
             this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.04, this.get_random_color(), this.height * 0.2, false));
         }
 
@@ -505,7 +505,7 @@ class Settings {
         </div>
 		<br>
         <div class="ac-game-settings-acwing">
-            <img width="40" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
+            <img width="50" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
             <br>
             <div>
                 w2一键登录
@@ -543,7 +543,7 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-acwing">
-            <img width="30" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
+            <img width="50" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
             <br>
             <div>
                 w2一键登录
