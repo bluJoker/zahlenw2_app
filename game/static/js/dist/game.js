@@ -39,12 +39,12 @@ class AcGameMenu {
         let outer = this;
         this.$single.click(function(){
             outer.hide();
-            outer.root.playground.show();
+            outer.root.playground.show("single mode");
             //console.log("click single");
         });
         this.$multi.click(function(){
-            //outer.hide();
-            //outer.root.playground.show("multi mode");
+            outer.hide();
+            outer.root.playground.show("multi mode");
             console.log("click mulit");
         });
         this.$settings.click(function(){
@@ -187,7 +187,7 @@ class Particle extends AcGameObject {
 
 class Player extends AcGameObject {
     // x, y: 球中心点坐标; speed:单位高度百分比，避免分辨率不同; is_me:表示是否是自己，自己和非自己的移动方式不同，自己通过鼠标键盘，其他人通过网络传递玩家移动消息
-    constructor(playground, x, y, radius, color, speed, is_me) {
+    constructor(playground, x, y, radius, color, speed, character, username, photo) {
         super();
         this.playground = playground;
         this.x = x;
@@ -206,7 +206,10 @@ class Player extends AcGameObject {
         this.radius = radius;
         this.color = color;
         this.speed = speed;
-        this.is_me = is_me;
+        this.character = character;
+        this.username = username;
+        this.photo = photo;
+
         // 精度:浮点运算中小于多少算0
         this.eps = 0.01; //eps统一用1%的scale表示
         //被击中后的摩擦力
@@ -216,9 +219,9 @@ class Player extends AcGameObject {
         //当前选择的技能
         this.cur_skill = null;
 
-        if (this.is_me) {
+        if (this.character !== "robot") {
             this.img = new Image();
-            this.img.src = this.playground.root.settings.photo;
+            this.img.src = this.photo;
         }    
     }
 
@@ -303,7 +306,7 @@ class Player extends AcGameObject {
     }
 
     start() {
-        if (this.is_me) {
+        if (this.character === "me") {
             this.add_listening_events();
         } else {
             let tx = Math.random() * this.playground.width / this.playground.scale;
@@ -320,7 +323,7 @@ class Player extends AcGameObject {
     update_move() {  // 更新玩家移动
         //单机模式中其他玩家随机攻击
         this.spent_time += this.timedelta / 1000;
-        if (!this.is_me && this.spent_time > 4 && Math.random() < 1 / 300.0) {
+        if (this.character === "robot" && this.spent_time > 4 && Math.random() < 1 / 300.0) {
             let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
             let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;
@@ -337,7 +340,7 @@ class Player extends AcGameObject {
             if (this.move_length < this.eps) {
                 this.move_length = 0;
                 this.vx = this.vy = 0;
-                if (!this.is_me) {
+                if (this.character === "robot") {
                     let tx = Math.random() * this.playground.width / this.playground.scale;
                     let ty = Math.random() * this.playground.height / this.playground.scale;
                     this.move_to(tx, ty);
@@ -354,7 +357,7 @@ class Player extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
-        if (this.is_me) {
+        if (this.character !== "robot") {
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
@@ -449,6 +452,46 @@ class FireBall extends AcGameObject {
         this.ctx.fill();
     }
 }
+class MultiPlayerSocket {
+    constructor(playground) {
+        this.playground = playground;
+
+        this.ws = new WebSocket("wss://app2672.acapp.acwing.com.cn/wss/multiplayer/");
+
+        this.start();
+    }
+    start() {}
+
+	send_create_player() {
+        let outer = this;
+        this.ws.send(JSON.stringify({
+            //'event': "create_player",
+            //'uuid': outer.uuid,
+            //'username': username,
+            //'photo': photo,
+			'message': "hello w2app server",
+        }));
+    }
+	
+    receive_create_player(uuid, username, photo) {
+        let player = new Player(
+            this.playground,
+            this.playground.width / 2 / this.playground.scale,
+            0.5,
+            0.05,
+            "white",
+            0.15,
+            "enemy",
+            username,
+            photo,
+        );
+
+        player.uuid = uuid;
+        this.playground.players.push(player);
+    }
+
+
+}
 class AcGamePlayground {
     constructor(root) {
         this.root = root;
@@ -485,19 +528,30 @@ class AcGamePlayground {
         if (this.game_map) this.game_map.resize();
     }
 
-    show() {  // 打开playground界面
+    show(mode) {  // 打开playground界面
+        let outer = this;
         this.$playground.show();
-        this.resize();
 
         this.width = this.$playground.width();
         this.height = this.$playground.height();
         this.game_map = new GameMap(this);
+        
+        this.resize();
+        
         this.players = [];
-        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.04, "white", 0.2, true));
-        for (let i = 0; i < 8; i ++ ) {
-            this.players.push(new Player(this, this.width / 2 / this.height, 0.5, 0.04, this.get_random_color(), 0.2, false));
-        }
+        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.04, "white", 0.2, "me", this.root.settings.username, this.root.settings.photo));
+        if (mode === "single mode") {
+            for (let i = 0; i < 8; i ++ ) {
+                this.players.push(new Player(this, this.width / 2 / this.height, 0.5, 0.04, this.get_random_color(), 0.2, "robot"));
+            }
+        } else if (mode === "multi mode") {
+            this.mps = new MultiPlayerSocket(this);
 
+            this.mps.ws.onopen = function() {
+                outer.mps.send_create_player();
+            };
+
+        }
     }
 
     hide() {  // 关闭playground界面

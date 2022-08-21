@@ -39,12 +39,12 @@ class AcGameMenu {
         let outer = this;
         this.$single.click(function(){
             outer.hide();
-            outer.root.playground.show();
+            outer.root.playground.show("single mode");
             //console.log("click single");
         });
         this.$multi.click(function(){
-            //outer.hide();
-            //outer.root.playground.show("multi mode");
+            outer.hide();
+            outer.root.playground.show("multi mode");
             console.log("click mulit");
         });
         this.$settings.click(function(){

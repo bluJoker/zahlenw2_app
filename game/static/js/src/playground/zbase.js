@@ -34,19 +34,30 @@ class AcGamePlayground {
         if (this.game_map) this.game_map.resize();
     }
 
-    show() {  // 打开playground界面
+    show(mode) {  // 打开playground界面
+        let outer = this;
         this.$playground.show();
-        this.resize();
 
         this.width = this.$playground.width();
         this.height = this.$playground.height();
         this.game_map = new GameMap(this);
+        
+        this.resize();
+        
         this.players = [];
-        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.04, "white", 0.2, true));
-        for (let i = 0; i < 8; i ++ ) {
-            this.players.push(new Player(this, this.width / 2 / this.height, 0.5, 0.04, this.get_random_color(), 0.2, false));
-        }
+        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.04, "white", 0.2, "me", this.root.settings.username, this.root.settings.photo));
+        if (mode === "single mode") {
+            for (let i = 0; i < 8; i ++ ) {
+                this.players.push(new Player(this, this.width / 2 / this.height, 0.5, 0.04, this.get_random_color(), 0.2, "robot"));
+            }
+        } else if (mode === "multi mode") {
+            this.mps = new MultiPlayerSocket(this);
 
+            this.mps.ws.onopen = function() {
+                outer.mps.send_create_player();
+            };
+
+        }
     }
 
     hide() {  // 关闭playground界面
