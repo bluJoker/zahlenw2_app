@@ -1,6 +1,8 @@
 class Player extends AcGameObject {
     // x, y: 球中心点坐标; speed:单位高度百分比，避免分辨率不同; is_me:表示是否是自己，自己和非自己的移动方式不同，自己通过鼠标键盘，其他人通过网络传递玩家移动消息
     constructor(playground, x, y, radius, color, speed, character, username, photo) {
+        console.log(character, username, photo);
+    
         super();
         this.playground = playground;
         this.x = x;
@@ -66,7 +68,6 @@ class Player extends AcGameObject {
     }
 
     shoot_fireball(tx, ty) {
-        //console.log("shoot fireball", tx, ty);
         let x = this.x, y = this.y;
         let radius = 0.01;
         let angle = Math.atan2(ty - this.y, tx - this.x);
@@ -84,7 +85,6 @@ class Player extends AcGameObject {
     }
 
     move_to(tx, ty) {
-        //console.log("move to", tx, ty);
         this.move_length = this.get_dist(this.x, this.y, tx, ty);
         //求角度 反正切
         let angle = Math.atan2(ty - this.y, tx - this.x);
@@ -181,7 +181,6 @@ class Player extends AcGameObject {
         } else {
             this.ctx.beginPath();
             this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
-            //console.log(this.x, this.y, this.radius);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
         }

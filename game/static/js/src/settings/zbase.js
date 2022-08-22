@@ -12,27 +12,27 @@ class Settings {
         <div class="ac-game-settings-title">
             登录
         </div>
-		<div class="ac-game-settings-username">
+        <div class="ac-game-settings-username">
             <div class="ac-game-settings-item">
                 <input type="text" placeholder="用户名">
             </div>
         </div>
-		<div class="ac-game-settings-password">
+        <div class="ac-game-settings-password">
             <div class="ac-game-settings-item">
                 <input type="password" placeholder="密码">
             </div>
         </div>
-		<div class="ac-game-settings-submit">
+        <div class="ac-game-settings-submit">
             <div class="ac-game-settings-item">
                 <button>登录</button>
             </div>
         </div>
- 		<div class="ac-game-settings-error-message">
+        <div class="ac-game-settings-error-message">
         </div>
-		<div class="ac-game-settings-option">
+        <div class="ac-game-settings-option">
             注册
         </div>
-		<br>
+        <br>
         <div class="ac-game-settings-acwing">
             <img width="50" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
             <br>
@@ -78,7 +78,7 @@ class Settings {
                 w2一键登录
             </div>
         </div>
- 
+
     </div>
 </div>
     `);
@@ -123,7 +123,7 @@ class Settings {
 
     }
 
-	add_listening_events() {
+    add_listening_events() {
         let outer = this;
         this.add_listening_events_login();
         this.add_listening_events_register();
@@ -134,7 +134,7 @@ class Settings {
         this.$login_register.click(function() {
             outer.register();
         });
-		this.$login_submit.click(function() {
+        this.$login_submit.click(function() {
             outer.login_on_remote();
         });
     }
@@ -160,7 +160,6 @@ class Settings {
                 platform: outer.platform,
             },
             success: function(resp) {
-                console.log(resp);
                 if (resp.result === "success") {
                     outer.username = resp.username;
                     outer.photo = resp.photo;
@@ -173,7 +172,7 @@ class Settings {
         });
     }
 
-	login_on_remote() {  // 在远程服务器上登录
+    login_on_remote() {  // 在远程服务器上登录
         let outer = this;
         let username = this.$login_username.val(); //val: 取出input的值
         let password = this.$login_password.val();
@@ -187,7 +186,6 @@ class Settings {
                 password: password,
             },
             success: function(resp) {
-				console.log(resp)
                 if (resp.result === "success") {
                     location.reload(); //逻辑: 登录成功就刷新页面, 调用getinfo可以获取cookie的用户信息, 登录成功会显示菜单页面[getinfo: outer.root.menu.show();]
                 } else {
@@ -203,7 +201,7 @@ class Settings {
         let password = this.$register_password.val();
         let password_confirm = this.$register_password_confirm.val();
         this.$register_error_message.empty();
-        
+
         $.ajax({
             url: "https://app2672.acapp.acwing.com.cn/settings/register/",
             type: "GET", // 方便调试用GET，此处修改数据库应该用post[安全]
@@ -214,7 +212,6 @@ class Settings {
 
             },
             success: function(resp) {
-                console.log(resp);
                 if (resp.result === "success") {
                     location.reload();
                 } else {

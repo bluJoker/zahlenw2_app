@@ -6,19 +6,39 @@ class MultiPlayerSocket {
 
         this.start();
     }
-    start() {}
+    start() {
+        this.receive();
+    }
 
-	send_create_player() {
+    receive() {
+        let outer = this;
+
+        // 前端接收wss信息
+        this.ws.onmessage = function(e) {
+            let data = JSON.parse(e.data);
+            // console.log(data);
+            let uuid = data.uuid;
+            if (uuid === outer.uuid) {
+                return false;
+            }
+            let event = data.event;
+            if (event === "create_player") {
+                outer.receive_create_player(uuid, data.username, data.photo);
+            }
+        };
+    }
+
+    send_create_player(username, photo) {
         let outer = this;
         this.ws.send(JSON.stringify({
-            //'event': "create_player",
-            //'uuid': outer.uuid,
-            //'username': username,
-            //'photo': photo,
-			'message': "hello w2app server",
+            'event': "create_player",
+            'uuid': outer.uuid,
+            'username': username,
+            'photo': photo,
+            //'message': "hello w2app server",
         }));
     }
-	
+
     receive_create_player(uuid, username, photo) {
         let player = new Player(
             this.playground,
@@ -32,7 +52,7 @@ class MultiPlayerSocket {
             photo,
         );
 
-        player.uuid = uuid;
+        player.uuid = uuid; // 等于创建的uuid
         this.playground.players.push(player);
     }
 

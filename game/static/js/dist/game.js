@@ -1,25 +1,23 @@
 class AcGameMenu {
     constructor(root) { //root: 即web.html中的js:acgame对象
         this.root = root;
-	console.log(this);
-	console.log(root);    
-	this.$menu = $(`
+        this.$menu = $(`
  <div class="ac-game-menu">
     <div class="banner-middle">
         <h4>一款现代多人游戏杰作-《DESTRUCTOID》</h4>
     </div>
     <div class="ac-game-menu-field">
         <div class="ac-game-menu-field-item ac-game-menu-field-item-single">
-	    单人模式
-	</div>
-	<br>
-	<div class="ac-game-menu-field-item ac-game-menu-field-item-multi">
-	    多人模式
-	</div>
-	<br>
-	<div class="ac-game-menu-field-item ac-game-menu-field-item-settings">
-	    退出
-	</div>
+        单人模式
+    </div>
+    <br>
+    <div class="ac-game-menu-field-item ac-game-menu-field-item-multi">
+        多人模式
+    </div>
+    <br>
+    <div class="ac-game-menu-field-item ac-game-menu-field-item-settings">
+        退出
+    </div>
     </div>
 </div>
     `);//html对象前加$，普通对象不加$
@@ -40,16 +38,13 @@ class AcGameMenu {
         this.$single.click(function(){
             outer.hide();
             outer.root.playground.show("single mode");
-            //console.log("click single");
         });
         this.$multi.click(function(){
             outer.hide();
             outer.root.playground.show("multi mode");
-            console.log("click mulit");
         });
         this.$settings.click(function(){
             outer.root.settings.logout_on_remote();
-            //console.log("click quit");
         });
     }
     show() {  // 显示menu界面
@@ -68,7 +63,19 @@ class AcGameObject {
 
         this.has_called_start = false;  // 是否执行过start函数
         this.timedelta = 0;  // 当前帧距离上一帧的时间间隔
+        this.uuid = this.create_uuid();
+        //console.log(this.uuid);
     }
+
+    create_uuid() {
+        let res = "";
+        for (let i = 0; i < 8; i++) {
+            let x = parseInt(Math.floor(Math.random() * 10));  // 返回[0, 1)之间的数
+            res += x;
+        }
+        return res;
+    }
+
 
     start() {  // 只会在第一帧执行一次
     }
@@ -114,7 +121,6 @@ class GameMap extends AcGameObject {
     constructor(playground) {
         super();
         this.playground = playground;
-        //console.log(playground);
         this.$canvas = $(`<canvas></canvas>`);
         this.ctx = this.$canvas[0].getContext('2d');
         this.ctx.canvas.width = this.playground.width;
@@ -188,6 +194,8 @@ class Particle extends AcGameObject {
 class Player extends AcGameObject {
     // x, y: 球中心点坐标; speed:单位高度百分比，避免分辨率不同; is_me:表示是否是自己，自己和非自己的移动方式不同，自己通过鼠标键盘，其他人通过网络传递玩家移动消息
     constructor(playground, x, y, radius, color, speed, character, username, photo) {
+        console.log(character, username, photo);
+    
         super();
         this.playground = playground;
         this.x = x;
@@ -253,7 +261,6 @@ class Player extends AcGameObject {
     }
 
     shoot_fireball(tx, ty) {
-        //console.log("shoot fireball", tx, ty);
         let x = this.x, y = this.y;
         let radius = 0.01;
         let angle = Math.atan2(ty - this.y, tx - this.x);
@@ -271,7 +278,6 @@ class Player extends AcGameObject {
     }
 
     move_to(tx, ty) {
-        //console.log("move to", tx, ty);
         this.move_length = this.get_dist(this.x, this.y, tx, ty);
         //求角度 反正切
         let angle = Math.atan2(ty - this.y, tx - this.x);
@@ -368,7 +374,6 @@ class Player extends AcGameObject {
         } else {
             this.ctx.beginPath();
             this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
-            //console.log(this.x, this.y, this.radius);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
         }
@@ -460,19 +465,39 @@ class MultiPlayerSocket {
 
         this.start();
     }
-    start() {}
+    start() {
+        this.receive();
+    }
 
-	send_create_player() {
+    receive() {
+        let outer = this;
+
+        // 前端接收wss信息
+        this.ws.onmessage = function(e) {
+            let data = JSON.parse(e.data);
+            // console.log(data);
+            let uuid = data.uuid;
+            if (uuid === outer.uuid) {
+                return false;
+            }
+            let event = data.event;
+            if (event === "create_player") {
+                outer.receive_create_player(uuid, data.username, data.photo);
+            }
+        };
+    }
+
+    send_create_player(username, photo) {
         let outer = this;
         this.ws.send(JSON.stringify({
-            //'event': "create_player",
-            //'uuid': outer.uuid,
-            //'username': username,
-            //'photo': photo,
-			'message': "hello w2app server",
+            'event': "create_player",
+            'uuid': outer.uuid,
+            'username': username,
+            'photo': photo,
+            //'message': "hello w2app server",
         }));
     }
-	
+
     receive_create_player(uuid, username, photo) {
         let player = new Player(
             this.playground,
@@ -486,7 +511,7 @@ class MultiPlayerSocket {
             photo,
         );
 
-        player.uuid = uuid;
+        player.uuid = uuid; // 等于创建的uuid
         this.playground.players.push(player);
     }
 
@@ -495,7 +520,6 @@ class MultiPlayerSocket {
 class AcGamePlayground {
     constructor(root) {
         this.root = root;
-        console.log(root);
         this.$playground = $(`<div class="ac-game-playground"></div>`);
 
         this.hide();
@@ -517,7 +541,6 @@ class AcGamePlayground {
     }
 
     resize() {
-        console.log("resize");
         this.width = this.$playground.width();
         this.height = this.$playground.height();
         let unit = Math.min(this.width / 16, this.height / 9);
@@ -546,9 +569,10 @@ class AcGamePlayground {
             }
         } else if (mode === "multi mode") {
             this.mps = new MultiPlayerSocket(this);
+            this.mps.uuid = this.players[0].uuid; //自己肯定最先加入是0号, 将自己的uuid也带在发送给服务器的信息中，服务器能区分自己和其他玩家
 
             this.mps.ws.onopen = function() {
-                outer.mps.send_create_player();
+                outer.mps.send_create_player(outer.root.settings.username, outer.root.settings.photo);
             };
 
         }
@@ -573,27 +597,27 @@ class Settings {
         <div class="ac-game-settings-title">
             登录
         </div>
-		<div class="ac-game-settings-username">
+        <div class="ac-game-settings-username">
             <div class="ac-game-settings-item">
                 <input type="text" placeholder="用户名">
             </div>
         </div>
-		<div class="ac-game-settings-password">
+        <div class="ac-game-settings-password">
             <div class="ac-game-settings-item">
                 <input type="password" placeholder="密码">
             </div>
         </div>
-		<div class="ac-game-settings-submit">
+        <div class="ac-game-settings-submit">
             <div class="ac-game-settings-item">
                 <button>登录</button>
             </div>
         </div>
- 		<div class="ac-game-settings-error-message">
+        <div class="ac-game-settings-error-message">
         </div>
-		<div class="ac-game-settings-option">
+        <div class="ac-game-settings-option">
             注册
         </div>
-		<br>
+        <br>
         <div class="ac-game-settings-acwing">
             <img width="50" src="https://app2672.acapp.acwing.com.cn/static/image/menu/shenle_xiao.jpg">
             <br>
@@ -639,7 +663,7 @@ class Settings {
                 w2一键登录
             </div>
         </div>
- 
+
     </div>
 </div>
     `);
@@ -684,7 +708,7 @@ class Settings {
 
     }
 
-	add_listening_events() {
+    add_listening_events() {
         let outer = this;
         this.add_listening_events_login();
         this.add_listening_events_register();
@@ -695,7 +719,7 @@ class Settings {
         this.$login_register.click(function() {
             outer.register();
         });
-		this.$login_submit.click(function() {
+        this.$login_submit.click(function() {
             outer.login_on_remote();
         });
     }
@@ -721,7 +745,6 @@ class Settings {
                 platform: outer.platform,
             },
             success: function(resp) {
-                console.log(resp);
                 if (resp.result === "success") {
                     outer.username = resp.username;
                     outer.photo = resp.photo;
@@ -734,7 +757,7 @@ class Settings {
         });
     }
 
-	login_on_remote() {  // 在远程服务器上登录
+    login_on_remote() {  // 在远程服务器上登录
         let outer = this;
         let username = this.$login_username.val(); //val: 取出input的值
         let password = this.$login_password.val();
@@ -748,7 +771,6 @@ class Settings {
                 password: password,
             },
             success: function(resp) {
-				console.log(resp)
                 if (resp.result === "success") {
                     location.reload(); //逻辑: 登录成功就刷新页面, 调用getinfo可以获取cookie的用户信息, 登录成功会显示菜单页面[getinfo: outer.root.menu.show();]
                 } else {
@@ -764,7 +786,7 @@ class Settings {
         let password = this.$register_password.val();
         let password_confirm = this.$register_password_confirm.val();
         this.$register_error_message.empty();
-        
+
         $.ajax({
             url: "https://app2672.acapp.acwing.com.cn/settings/register/",
             type: "GET", // 方便调试用GET，此处修改数据库应该用post[安全]
@@ -775,7 +797,6 @@ class Settings {
 
             },
             success: function(resp) {
-                console.log(resp);
                 if (resp.result === "success") {
                     location.reload();
                 } else {
@@ -813,8 +834,6 @@ class Settings {
 
 export class AcGame {
     constructor(id, AcWingOS) {
-        console.log("create zahlenw2 game~");
-        console.log(this);
         this.id = id; //传进i来的id为div-id
         this.$ac_game = $('#' + id);
         this.AcWingOS = AcWingOS

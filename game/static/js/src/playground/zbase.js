@@ -1,7 +1,6 @@
 class AcGamePlayground {
     constructor(root) {
         this.root = root;
-        console.log(root);
         this.$playground = $(`<div class="ac-game-playground"></div>`);
 
         this.hide();
@@ -23,7 +22,6 @@ class AcGamePlayground {
     }
 
     resize() {
-        console.log("resize");
         this.width = this.$playground.width();
         this.height = this.$playground.height();
         let unit = Math.min(this.width / 16, this.height / 9);
@@ -52,9 +50,10 @@ class AcGamePlayground {
             }
         } else if (mode === "multi mode") {
             this.mps = new MultiPlayerSocket(this);
+            this.mps.uuid = this.players[0].uuid; //自己肯定最先加入是0号, 将自己的uuid也带在发送给服务器的信息中，服务器能区分自己和其他玩家
 
             this.mps.ws.onopen = function() {
-                outer.mps.send_create_player();
+                outer.mps.send_create_player(outer.root.settings.username, outer.root.settings.photo);
             };
 
         }
