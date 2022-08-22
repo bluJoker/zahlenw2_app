@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.cache import cache
 
 class MultiPlayer(AsyncWebsocketConsumer):
-    async def connect(self):
+    async def connect(self): # 处理前端发来的创建wss连接消息
         self.room_name = None
 
         # 找到一个可用房间
@@ -13,7 +13,7 @@ class MultiPlayer(AsyncWebsocketConsumer):
             if not cache.has_key(name) or len(cache.get(name)) < settings.ROOM_CAPACITY:
                 self.room_name = name
                 break
-        
+
         if not self.room_name: # 房间不够了
             return
 
@@ -51,7 +51,7 @@ class MultiPlayer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.room_name,
             {
-                'type': "group_create_player",
+                'type': "group_create_player", # 收到群发消息后的处理函数
                 'event': "create_player",
                 'uuid': data['uuid'],
                 'username': data['username'],
@@ -62,9 +62,9 @@ class MultiPlayer(AsyncWebsocketConsumer):
     async def group_create_player(self, data):
         await self.send(text_data=json.dumps(data)) # 发送给前端
 
-    async def receive(self, text_data):
+    async def receive(self, text_data): # 处理收到前端发送的请求消息
         data = json.loads(text_data)
-        print(data)
+        print("consumers-receive", data)
         event = data['event']
         if event == "create_player":
             await self.create_player(data)

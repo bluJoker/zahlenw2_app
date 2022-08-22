@@ -457,6 +457,7 @@ class FireBall extends AcGameObject {
         this.ctx.fill();
     }
 }
+// 实现前端与server的wss连接
 class MultiPlayerSocket {
     constructor(playground) {
         this.playground = playground;
@@ -491,7 +492,7 @@ class MultiPlayerSocket {
         let outer = this;
         this.ws.send(JSON.stringify({
             'event': "create_player",
-            'uuid': outer.uuid,
+            'uuid': outer.uuid, // playground/zbase.js 中的 this.mps.uuid
             'username': username,
             'photo': photo,
             //'message': "hello w2app server",
